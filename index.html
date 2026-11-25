@@ -247,7 +247,7 @@ function collect(){
     guests.push(o);
   }
   if(!$("#consent").checked)return err(t("e_consent"));
-  return {action:"submit",lang:L,stay:{property:$("#prop").value,code,checkin:cin,checkout:cout},motivo:$("#motivo").value,transporte:$("#transp").value,guests};
+  return {action:"submit",expected:parseInt(qs.get("n")||"0",10)||null,lang:L,stay:{property:$("#prop").value,code,checkin:cin,checkout:cout},motivo:$("#motivo").value,transporte:$("#transp").value,guests};
 }
 
 $("#send").onclick=async()=>{

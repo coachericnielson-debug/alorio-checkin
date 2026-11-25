@@ -53,7 +53,7 @@ async function load(){
     else if(s.checkin<=tomorrow)groups.soon.push(s);
     else groups.later.push(s);
   }
-  const missing=[...groups.now,...groups.soon].filter(s=>!s.people.length).length;
+  const missing=[...groups.now,...groups.soon].filter(s=>!s.people.length||(s.expected&&s.people.length<s.expected)).length;
   document.getElementById("sub").textContent=missing?`${missing} hospedagem(ns) hoje/amanhã sem registro`:"Hoje e amanhã: tudo registrado";
   const sec=(title,list)=>list.length?`<h2>${title}</h2>`+list.map(card).join(""):"";
   document.getElementById("m").innerHTML=
@@ -62,7 +62,8 @@ async function load(){
 }
 function card(s){
   const n=s.people.length;
-  const badge=s.needs_review?'<span class="badge warn">conferir</span>':n?`<span class="badge ok">✓ ${n} ${n>1?"pessoas":"pessoa"}</span>`:'<span class="badge bad">falta registro</span>';
+  const exp=s.expected; const partial=exp&&n<exp;
+  const badge=s.needs_review?'<span class="badge warn">conferir</span>':partial?`<span class="badge warn">${n} de ${exp}</span>`:n?`<span class="badge ok">✓ ${n}${exp?" de "+exp:""} ${n>1?"pessoas":"pessoa"}</span>`:'<span class="badge bad">falta registro</span>';
   const ppl=n?`<div class="people">${s.people.map(p=>esc(p.name.split(" ").slice(0,2).join(" "))).join(", ")}</div>`:"";
   const link=`${LINK}?c=${s.code}`;
   return `<div class="stay"><div class="top"><div><div class="prop">${PN[s.property]||s.property}</div><div class="dates">${fd(s.checkin)} → ${fd(s.checkout)}</div></div>${badge}</div>${ppl}
