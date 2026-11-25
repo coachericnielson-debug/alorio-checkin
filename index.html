@@ -292,7 +292,7 @@ if(P[qs.get("p")])$("#prop").value=qs.get("p");
 if(qs.get("in"))$("#cin").value=qs.get("in");
 if(qs.get("out"))$("#cout").value=qs.get("out");
 $("#code").oninput=e=>{e.target.value=e.target.value.toUpperCase();if(e.target.value.length===10)findStay(e.target.value);};
-if(qs.get("c")){$("#code").value=qs.get("c").toUpperCase();findStay(qs.get("c"));}
+if(qs.get("c")){$("#code").value=qs.get("c").toUpperCase();$("#stayIn").classList.add("hidden");findStay(qs.get("c")).finally(()=>{if(!STAY)$("#stayIn").classList.remove("hidden");});}
 addGuest();
 </script>
 </body>
