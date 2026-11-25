@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f4c4a">
+<title>Alo Rio · Check-in</title>
+<style>
+:root{
+  --ink:#1d2624; --muted:#5d6b68; --line:#d9e0dd; --bg:#f6f3ee; --card:#fff;
+  --brand:#0f4c4a; --brand2:#e07a3f; --ok:#1f7a4d; --bad:#b3261e;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+header{background:var(--brand);color:#fff;padding:18px 16px 16px;padding-top:max(18px,env(safe-area-inset-top))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:560px;margin:0 auto}
+.logo{font-weight:700;font-size:19px;letter-spacing:.2px}
+.logo span{color:#f6c9a8}
+select.lang{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:6px 10px;font-size:15px}
+select.lang option{color:#000}
+.intro{max-width:560px;margin:12px auto 0;font-size:15.5px;opacity:.92}
+main{max-width:560px;margin:0 auto;padding:14px 12px 120px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0}
+h2{font-size:18px;margin:0 0 10px}
+label{display:block;font-size:14.5px;color:var(--muted);margin:12px 0 5px}
+input,select{width:100%;font-size:17px;padding:12px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);-webkit-appearance:none;appearance:none}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+input[type=checkbox]{width:22px;height:22px;flex:none;margin:0}
+.row{display:flex;gap:10px}.row>*{flex:1;min-width:0}
+.seg{display:flex;background:#eef2f0;border-radius:12px;padding:4px;gap:4px;margin-top:4px}
+.seg button{flex:1;border:0;background:transparent;padding:11px 6px;border-radius:9px;font-size:15.5px;color:var(--muted)}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.cam{display:flex;align-items:center;gap:12px;border:2px dashed #b9c6c2;border-radius:12px;padding:14px;margin-top:12px;background:#fafcfb;cursor:pointer}
+.cam .ic{width:46px;height:46px;border-radius:10px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:24px;flex:none}
+.cam img{width:74px;height:52px;object-fit:cover;border-radius:6px;flex:none}
+.cam b{display:block;font-size:16px}.cam small{color:var(--muted);font-size:13.5px}
+.hint{font-size:13.5px;color:var(--muted);margin-top:6px}
+.ok{color:var(--ok);font-weight:600;font-size:15px;margin-top:8px}
+.err{color:var(--bad);font-size:14.5px;margin-top:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:15px;color:var(--ink)}
+.gh{display:flex;justify-content:space-between;align-items:center}
+.rm{border:0;background:none;color:var(--bad);font-size:14.5px;padding:6px}
+.add{width:100%;border:2px dashed var(--brand);background:transparent;color:var(--brand);font-weight:600;font-size:16px;padding:14px;border-radius:var(--r)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:rgba(246,243,238,.96);backdrop-filter:blur(6px);border-top:1px solid var(--line);padding:12px 12px max(12px,env(safe-area-inset-bottom))}
+.bar button{display:block;width:100%;max-width:560px;margin:0 auto;border:0;background:var(--brand2);color:#fff;font-size:18px;font-weight:700;padding:16px;border-radius:14px}
+.bar button:disabled{opacity:.55}
+.done{text-align:center;padding:40px 18px}
+.done .big{font-size:56px}
+.done h2{font-size:22px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="logo">Alo<span>Rio</span> · check-in</div>
+    <select class="lang" id="lang" aria-label="Language">
+      <option value="pt">Português</option><option value="en">English</option><option value="es">Español</option>
+      <option value="fr">Français</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="ja">日本語</option>
+    </select>
+  </div>
+  <p class="intro" data-t="intro"></p>
+</header>
+
+<main id="app">
+  <section class="card">
+    <h2 data-t="stay"></h2>
+    <label for="prop" data-t="prop"></label>
+    <select id="prop">
+      <option value="skydreams">Sky Dreams (2706)</option>
+      <option value="vista">Vista Panorâmica (2009)</option>
+      <option value="casamaria">Casa Maria (Santa Teresa)</option>
+      <option value="casaquerida">Casa querida (Santa Teresa)</option>
+    </select>
+    <label for="code" data-t="code"></label>
+    <input id="code" autocapitalize="characters" autocomplete="off" placeholder="HM........" maxlength="10">
+    <div class="hint" data-t="codehint"></div>
+    <div class="row">
+      <div><label for="cin" data-t="cin"></label><input id="cin" type="date"></div>
+      <div><label for="cout" data-t="cout"></label><input id="cout" type="date"></div>
+    </div>
+    <div class="row">
+      <div><label for="motivo" data-t="why"></label><select id="motivo"></select></div>
+      <div><label for="transp" data-t="how"></label><select id="transp"></select></div>
+    </div>
+  </section>
+
+  <div id="guests"></div>
+  <button class="add" id="addGuest" type="button" data-t="add"></button>
+
+  <section class="card">
+    <label class="chk"><input type="checkbox" id="consent"><span data-t="consent"></span></label>
+    <div class="err hidden" id="formErr"></div>
+  </section>
+</main>
+
+<section id="done" class="done hidden">
+  <div class="big">✓</div>
+  <h2 data-t="thanks"></h2>
+  <p data-t="thanks2"></p>
+</section>
+
+<div class="bar" id="bar"><button id="send" type="button" data-t="send"></button></div>
+
+<template id="gtpl">
+  <section class="card guest">
+    <div class="gh"><h2 class="gtitle"></h2><button class="rm" type="button" data-t="remove"></button></div>
+    <div class="seg"><button type="button" class="on" data-k="passport" data-t="tpass"></button><button type="button" data-k="cpf" data-t="tcpf"></button></div>
+
+    <div class="pass">
+      <div class="cam" role="button" tabindex="0">
+        <div class="ic">📷</div><img class="prev hidden" alt="">
+        <div><b data-t="photo"></b><small data-t="photohint"></small></div>
+        <input type="file" accept="image/*" capture="environment" class="hidden photo">
+      </div>
+      <label data-t="pnum"></label><input class="pnum" autocapitalize="characters" autocomplete="off">
+      <label data-t="given"></label><input class="given" autocomplete="given-name">
+      <label data-t="surname"></label><input class="surname" autocomplete="family-name">
+      <label data-t="nat"></label><select class="nat"></select>
+      <div class="row">
+        <div><label data-t="dob"></label><input class="pdob" type="date"></div>
+        <div><label data-t="sex"></label><select class="sex"></select></div>
+      </div>
+      <label data-t="res"></label><select class="res"></select>
+    </div>
+
+    <div class="cpfbox hidden">
+      <label data-t="cpf"></label><input class="cpf" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" maxlength="14">
+      <label data-t="dob"></label><input class="cdob" type="date">
+      <div class="hint" data-t="cpfhint"></div>
+      <div class="ok hidden cpfok"></div><div class="err hidden cpferr"></div>
+    </div>
+
+    <div class="main-only">
+      <label data-t="email"></label><input class="email" type="email" autocomplete="email" inputmode="email">
+      <label data-t="phone"></label><input class="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+55 21 9....-....">
+    </div>
+    <label class="chk minor-only"><input type="checkbox" class="minor"><span data-t="minor"></span></label>
+  </section>
+</template>
+
+<script>
+const API = "https://zztnayiobjwdxktflivz.supabase.co/functions/v1/alorio-checkin";
+
+const T = {
+pt:{intro:"A lei brasileira exige que todo hóspede seja registrado no Ministério do Turismo (FNRH). Leva cerca de um minuto por pessoa. Seus dados vão direto para o sistema oficial.",stay:"Sua estadia",prop:"Acomodação",code:"Código da reserva Airbnb",codehint:"Começa com HM. Está na sua reserva no app do Airbnb.",cin:"Entrada",cout:"Saída",why:"Motivo da viagem",how:"Como chega ao Rio",add:"+ Adicionar outro hóspede",consent:"Declaro que as informações são verdadeiras e autorizo seu uso para o registro de hóspedes exigido por lei (LGPD).",send:"Enviar registro",sending:"Enviando…",thanks:"Pronto, obrigado!",thanks2:"Seu registro foi recebido. Nos vemos em breve no Rio.",remove:"Remover",tpass:"Passaporte",tcpf:"Brasileiro (CPF)",photo:"Foto do passaporte",photohint:"Página com sua foto. Toque para abrir a câmera.",pnum:"Número do passaporte",given:"Nome(s)",surname:"Sobrenome(s)",nat:"Nacionalidade",dob:"Data de nascimento",sex:"Sexo",res:"País onde mora",cpf:"CPF",cpfhint:"Com o CPF e a data de nascimento, o governo completa o resto.",email:"E-mail",phone:"WhatsApp",minor:"Menor de 18 anos",guest:"Hóspede",main:"Hóspede principal",found:"Encontrado:",cpfbad:"CPF inválido.",cpfnf:"CPF e data de nascimento não conferem. Confira os dois.",e_code:"Confira o código da reserva (HM + 8 letras/números).",e_dates:"Confira as datas de entrada e saída.",e_guest:"Faltam dados do hóspede",e_consent:"Marque a autorização para continuar.",e_server:"Não conseguimos enviar. Tente de novo ou fale conosco no Airbnb.",sx:["Masculino","Feminino","Outro","Prefiro não informar"],mv:{LAZER_FERIAS:"Lazer/férias",NEGOCIOS:"Negócios",PARENTES_AMIGOS:"Parentes/amigos",CONGRESSO_FEIRA:"Congresso/feira",ESTUDOS_CURSOS:"Estudos",SAUDE:"Saúde",RELIGIAO:"Religião",COMPRAS:"Compras"},tr:{AVIAO:"Avião",AUTOMOVEL:"Carro",ONIBUS:"Ônibus",NAVIO_BARCO:"Navio/barco",MOTO:"Moto",TREM:"Trem",BICICLETA:"Bicicleta",PE:"A pé"}},
+en:{intro:"Brazilian law requires every guest to be registered with the Ministry of Tourism (FNRH). It takes about a minute per person. Your details go straight to the official system.",stay:"Your stay",prop:"Place",code:"Airbnb confirmation code",codehint:"Starts with HM. You'll find it in your trip in the Airbnb app.",cin:"Check-in",cout:"Check-out",why:"Reason for the trip",how:"How you get to Rio",add:"+ Add another guest",consent:"I confirm this information is true and agree to its use for the guest registration required by Brazilian law.",send:"Send registration",sending:"Sending…",thanks:"All set, thank you!",thanks2:"Your registration came through. See you soon in Rio.",remove:"Remove",tpass:"Passport",tcpf:"Brazilian (CPF)",photo:"Photo of your passport",photohint:"The page with your picture. Tap to open the camera.",pnum:"Passport number",given:"First and middle names",surname:"Last name(s)",nat:"Nationality",dob:"Date of birth",sex:"Sex",res:"Country where you live",cpf:"CPF",cpfhint:"With CPF and birth date the government fills in the rest.",email:"Email",phone:"WhatsApp",minor:"Under 18",guest:"Guest",main:"Main guest",found:"Found:",cpfbad:"That CPF isn't valid.",cpfnf:"CPF and birth date don't match. Please check both.",e_code:"Please check the confirmation code (HM + 8 letters/numbers).",e_dates:"Please check your check-in and check-out dates.",e_guest:"Some details are missing for",e_consent:"Please tick the box to continue.",e_server:"We couldn't send it. Try again or message us on Airbnb.",sx:["Male","Female","Other","Prefer not to say"],mv:{LAZER_FERIAS:"Holiday",NEGOCIOS:"Business",PARENTES_AMIGOS:"Visiting family/friends",CONGRESSO_FEIRA:"Conference/fair",ESTUDOS_CURSOS:"Study",SAUDE:"Health",RELIGIAO:"Religion",COMPRAS:"Shopping"},tr:{AVIAO:"Plane",AUTOMOVEL:"Car",ONIBUS:"Bus",NAVIO_BARCO:"Ship/boat",MOTO:"Motorbike",TREM:"Train",BICICLETA:"Bicycle",PE:"On foot"}},
+es:{intro:"La ley brasileña exige registrar a cada huésped en el Ministerio de Turismo (FNRH). Toma un minuto por persona. Tus datos van directo al sistema oficial.",stay:"Tu estadía",prop:"Alojamiento",code:"Código de reserva de Airbnb",codehint:"Empieza con HM. Está en tu viaje en la app de Airbnb.",cin:"Entrada",cout:"Salida",why:"Motivo del viaje",how:"Cómo llegas a Río",add:"+ Agregar otro huésped",consent:"Declaro que la información es verdadera y autorizo su uso para el registro de huéspedes que exige la ley brasileña.",send:"Enviar registro",sending:"Enviando…",thanks:"¡Listo, gracias!",thanks2:"Recibimos tu registro. Nos vemos pronto en Río.",remove:"Quitar",tpass:"Pasaporte",tcpf:"Brasileño (CPF)",photo:"Foto del pasaporte",photohint:"La página con tu foto. Toca para abrir la cámara.",pnum:"Número de pasaporte",given:"Nombre(s)",surname:"Apellido(s)",nat:"Nacionalidad",dob:"Fecha de nacimiento",sex:"Sexo",res:"País donde vives",cpf:"CPF",cpfhint:"Con el CPF y la fecha de nacimiento el gobierno completa el resto.",email:"Correo",phone:"WhatsApp",minor:"Menor de 18 años",guest:"Huésped",main:"Huésped principal",found:"Encontrado:",cpfbad:"CPF no válido.",cpfnf:"El CPF y la fecha de nacimiento no coinciden.",e_code:"Revisa el código de reserva (HM + 8 letras/números).",e_dates:"Revisa las fechas de entrada y salida.",e_guest:"Faltan datos de",e_consent:"Marca la casilla para continuar.",e_server:"No pudimos enviarlo. Inténtalo de nuevo o escríbenos en Airbnb.",sx:["Masculino","Femenino","Otro","Prefiero no decir"],mv:{LAZER_FERIAS:"Vacaciones",NEGOCIOS:"Negocios",PARENTES_AMIGOS:"Familia/amigos",CONGRESSO_FEIRA:"Congreso/feria",ESTUDOS_CURSOS:"Estudios",SAUDE:"Salud",RELIGIAO:"Religión",COMPRAS:"Compras"},tr:{AVIAO:"Avión",AUTOMOVEL:"Auto",ONIBUS:"Bus",NAVIO_BARCO:"Barco",MOTO:"Moto",TREM:"Tren",BICICLETA:"Bicicleta",PE:"A pie"}},
+fr:{intro:"La loi brésilienne exige d'enregistrer chaque voyageur auprès du ministère du Tourisme (FNRH). Une minute par personne suffit. Vos données vont directement au système officiel.",stay:"Votre séjour",prop:"Logement",code:"Code de réservation Airbnb",codehint:"Commence par HM. Vous le trouverez dans votre voyage sur l'app Airbnb.",cin:"Arrivée",cout:"Départ",why:"Motif du voyage",how:"Comment vous arrivez à Rio",add:"+ Ajouter un voyageur",consent:"Je confirme que ces informations sont exactes et j'accepte leur usage pour l'enregistrement exigé par la loi brésilienne.",send:"Envoyer",sending:"Envoi…",thanks:"C'est fait, merci !",thanks2:"Votre enregistrement est bien reçu. À bientôt à Rio.",remove:"Retirer",tpass:"Passeport",tcpf:"Brésilien (CPF)",photo:"Photo du passeport",photohint:"La page avec votre photo. Touchez pour ouvrir l'appareil.",pnum:"Numéro de passeport",given:"Prénom(s)",surname:"Nom(s)",nat:"Nationalité",dob:"Date de naissance",sex:"Sexe",res:"Pays de résidence",cpf:"CPF",cpfhint:"Avec le CPF et la date de naissance, le gouvernement complète le reste.",email:"E-mail",phone:"WhatsApp",minor:"Moins de 18 ans",guest:"Voyageur",main:"Voyageur principal",found:"Trouvé :",cpfbad:"CPF invalide.",cpfnf:"Le CPF et la date de naissance ne correspondent pas.",e_code:"Vérifiez le code (HM + 8 lettres/chiffres).",e_dates:"Vérifiez les dates d'arrivée et de départ.",e_guest:"Il manque des informations pour",e_consent:"Cochez la case pour continuer.",e_server:"L'envoi a échoué. Réessayez ou écrivez-nous sur Airbnb.",sx:["Homme","Femme","Autre","Je préfère ne pas répondre"],mv:{LAZER_FERIAS:"Vacances",NEGOCIOS:"Affaires",PARENTES_AMIGOS:"Famille/amis",CONGRESSO_FEIRA:"Congrès/salon",ESTUDOS_CURSOS:"Études",SAUDE:"Santé",RELIGIAO:"Religion",COMPRAS:"Shopping"},tr:{AVIAO:"Avion",AUTOMOVEL:"Voiture",ONIBUS:"Bus",NAVIO_BARCO:"Bateau",MOTO:"Moto",TREM:"Train",BICICLETA:"Vélo",PE:"À pied"}},
+de:{intro:"Das brasilianische Gesetz verlangt, dass jeder Gast beim Tourismusministerium (FNRH) gemeldet wird. Es dauert etwa eine Minute pro Person. Deine Daten gehen direkt ins offizielle System.",stay:"Dein Aufenthalt",prop:"Unterkunft",code:"Airbnb-Buchungscode",codehint:"Beginnt mit HM. Du findest ihn in deiner Reise in der Airbnb-App.",cin:"Anreise",cout:"Abreise",why:"Reisegrund",how:"Wie du nach Rio kommst",add:"+ Weiteren Gast hinzufügen",consent:"Ich bestätige, dass die Angaben stimmen, und stimme ihrer Nutzung für die gesetzlich vorgeschriebene Gästemeldung zu.",send:"Absenden",sending:"Wird gesendet…",thanks:"Fertig, danke!",thanks2:"Deine Meldung ist angekommen. Bis bald in Rio.",remove:"Entfernen",tpass:"Reisepass",tcpf:"Brasilianer (CPF)",photo:"Foto vom Reisepass",photohint:"Die Seite mit deinem Foto. Tippen öffnet die Kamera.",pnum:"Passnummer",given:"Vorname(n)",surname:"Nachname(n)",nat:"Staatsangehörigkeit",dob:"Geburtsdatum",sex:"Geschlecht",res:"Wohnsitzland",cpf:"CPF",cpfhint:"Mit CPF und Geburtsdatum ergänzt die Behörde den Rest.",email:"E-Mail",phone:"WhatsApp",minor:"Unter 18",guest:"Gast",main:"Hauptgast",found:"Gefunden:",cpfbad:"Ungültige CPF.",cpfnf:"CPF und Geburtsdatum passen nicht zusammen.",e_code:"Bitte den Buchungscode prüfen (HM + 8 Zeichen).",e_dates:"Bitte An- und Abreisedatum prüfen.",e_guest:"Es fehlen Angaben für",e_consent:"Bitte das Kästchen ankreuzen.",e_server:"Senden hat nicht geklappt. Bitte nochmal versuchen oder uns auf Airbnb schreiben.",sx:["Männlich","Weiblich","Divers","Keine Angabe"],mv:{LAZER_FERIAS:"Urlaub",NEGOCIOS:"Geschäftlich",PARENTES_AMIGOS:"Familie/Freunde",CONGRESSO_FEIRA:"Kongress/Messe",ESTUDOS_CURSOS:"Studium",SAUDE:"Gesundheit",RELIGIAO:"Religion",COMPRAS:"Einkaufen"},tr:{AVIAO:"Flugzeug",AUTOMOVEL:"Auto",ONIBUS:"Bus",NAVIO_BARCO:"Schiff/Boot",MOTO:"Motorrad",TREM:"Zug",BICICLETA:"Fahrrad",PE:"Zu Fuß"}},
+it:{intro:"La legge brasiliana richiede che ogni ospite sia registrato presso il Ministero del Turismo (FNRH). Serve circa un minuto a persona. I tuoi dati vanno direttamente al sistema ufficiale.",stay:"Il tuo soggiorno",prop:"Alloggio",code:"Codice di prenotazione Airbnb",codehint:"Inizia con HM. Lo trovi nel tuo viaggio sull'app Airbnb.",cin:"Arrivo",cout:"Partenza",why:"Motivo del viaggio",how:"Come arrivi a Rio",add:"+ Aggiungi un altro ospite",consent:"Dichiaro che le informazioni sono vere e ne autorizzo l'uso per la registrazione richiesta dalla legge brasiliana.",send:"Invia",sending:"Invio…",thanks:"Fatto, grazie!",thanks2:"Abbiamo ricevuto la registrazione. A presto a Rio.",remove:"Rimuovi",tpass:"Passaporto",tcpf:"Brasiliano (CPF)",photo:"Foto del passaporto",photohint:"La pagina con la tua foto. Tocca per aprire la fotocamera.",pnum:"Numero di passaporto",given:"Nome/i",surname:"Cognome/i",nat:"Nazionalità",dob:"Data di nascita",sex:"Sesso",res:"Paese di residenza",cpf:"CPF",cpfhint:"Con CPF e data di nascita il governo completa il resto.",email:"Email",phone:"WhatsApp",minor:"Minore di 18 anni",guest:"Ospite",main:"Ospite principale",found:"Trovato:",cpfbad:"CPF non valido.",cpfnf:"CPF e data di nascita non corrispondono.",e_code:"Controlla il codice (HM + 8 lettere/numeri).",e_dates:"Controlla le date di arrivo e partenza.",e_guest:"Mancano dati per",e_consent:"Spunta la casella per continuare.",e_server:"Invio non riuscito. Riprova o scrivici su Airbnb.",sx:["Maschile","Femminile","Altro","Preferisco non dirlo"],mv:{LAZER_FERIAS:"Vacanza",NEGOCIOS:"Lavoro",PARENTES_AMIGOS:"Famiglia/amici",CONGRESSO_FEIRA:"Congresso/fiera",ESTUDOS_CURSOS:"Studio",SAUDE:"Salute",RELIGIAO:"Religione",COMPRAS:"Shopping"},tr:{AVIAO:"Aereo",AUTOMOVEL:"Auto",ONIBUS:"Autobus",NAVIO_BARCO:"Nave/barca",MOTO:"Moto",TREM:"Treno",BICICLETA:"Bicicletta",PE:"A piedi"}},
+ja:{intro:"ブラジルの法律により、すべての宿泊者は観光省（FNRH）への登録が必要です。1人あたり約1分で終わります。入力内容は公式システムに直接送られます。",stay:"ご滞在",prop:"宿泊先",code:"Airbnb予約コード",codehint:"HMで始まるコードです。Airbnbアプリの旅行ページにあります。",cin:"チェックイン",cout:"チェックアウト",why:"旅行の目的",how:"リオへの交通手段",add:"+ 宿泊者を追加",consent:"入力内容が正しいことを確認し、ブラジルの法律で定められた宿泊者登録に使用することに同意します。",send:"送信する",sending:"送信中…",thanks:"完了しました。ありがとうございます！",thanks2:"登録を受け付けました。リオでお会いしましょう。",remove:"削除",tpass:"パスポート",tcpf:"ブラジル人（CPF）",photo:"パスポートの写真",photohint:"顔写真のあるページ。タップするとカメラが開きます。",pnum:"旅券番号",given:"名（ミドルネーム含む）",surname:"姓",nat:"国籍",dob:"生年月日",sex:"性別",res:"居住国",cpf:"CPF",cpfhint:"CPFと生年月日で残りは政府側で補完されます。",email:"メール",phone:"WhatsApp",minor:"18歳未満",guest:"宿泊者",main:"代表者",found:"確認:",cpfbad:"CPFが正しくありません。",cpfnf:"CPFと生年月日が一致しません。",e_code:"予約コードを確認してください（HM＋8文字）。",e_dates:"チェックイン・チェックアウト日を確認してください。",e_guest:"入力が不足しています：",e_consent:"同意にチェックしてください。",e_server:"送信できませんでした。もう一度お試しいただくか、Airbnbでご連絡ください。",sx:["男性","女性","その他","回答しない"],mv:{LAZER_FERIAS:"観光・休暇",NEGOCIOS:"ビジネス",PARENTES_AMIGOS:"家族・友人訪問",CONGRESSO_FEIRA:"会議・展示会",ESTUDOS_CURSOS:"留学・研修",SAUDE:"医療",RELIGIAO:"宗教",COMPRAS:"買い物"},tr:{AVIAO:"飛行機",AUTOMOVEL:"車",ONIBUS:"バス",NAVIO_BARCO:"船",MOTO:"バイク",TREM:"電車",BICICLETA:"自転車",PE:"徒歩"}}
+};
+const SEXV=["HOMEM","MULHER","OUTRO","NAOINFORMADO"];
+const TOP=["BR","US","AR","GB","FR","DE","ES","PT","IT","CL","CO","MX","UY","CA","NL","AU","JP"];
+const ALL="AD AE AF AG AL AM AO AR AT AU AZ BA BB BD BE BF BG BH BI BJ BN BO BR BS BT BW BY BZ CA CD CF CG CH CI CL CM CN CO CR CU CV CY CZ DE DJ DK DM DO DZ EC EE EG ER ES ET FI FJ FM FR GA GB GD GE GH GM GN GQ GR GT GW GY HK HN HR HT HU ID IE IL IN IQ IR IS IT JM JO JP KE KG KH KI KM KN KP KR KW KZ LA LB LC LI LK LR LS LT LU LV LY MA MC MD ME MG MH MK ML MM MN MO MR MT MU MV MW MX MY MZ NA NE NG NI NL NO NP NR NZ OM PA PE PG PH PK PL PS PR PT PW PY QA RO RS RU RW SA SB SC SD SE SG SI SK SL SM SN SO SR SS ST SV SY SZ TD TG TH TJ TL TM TN TO TR TT TV TW TZ UA UG US UY UZ VA VC VE VN VU WS XK YE ZA ZM ZW".split(" ");
+
+const qs=new URLSearchParams(location.search);
+let L=qs.get("lang")||((navigator.language||"pt").slice(0,2));
+if(!T[L])L="en";
+const $=s=>document.querySelector(s);
+const t=k=>T[L][k]??T.en[k]??k;
+
+function countries(sel,def){
+  const dn=new Intl.DisplayNames([L],{type:"region"});
+  const cur=sel.value||def||"";
+  const name=c=>{try{return dn.of(c)}catch(e){return c}};
+  const rest=ALL.filter(c=>!TOP.includes(c)).sort((a,b)=>name(a).localeCompare(name(b),L));
+  sel.innerHTML='<option value=""></option>'+TOP.map(c=>`<option value="${c}">${name(c)}</option>`).join("")+'<option disabled>──────────</option>'+rest.map(c=>`<option value="${c}">${name(c)}</option>`).join("");
+  sel.value=cur;
+}
+function fillSelect(sel,map,keep){const v=sel.value;sel.innerHTML=Object.entries(map).map(([k,lab])=>`<option value="${k}">${lab}</option>`).join("");sel.value=keep&&v?v:sel.options[0].value;}
+
+function applyLang(){
+  document.documentElement.lang=L; $("#lang").value=L;
+  document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));
+  fillSelect($("#motivo"),t("mv"),true); fillSelect($("#transp"),t("tr"),true);
+  document.querySelectorAll(".guest").forEach(g=>{
+    countries(g.querySelector(".nat")); countries(g.querySelector(".res"));
+    const sx=g.querySelector(".sex"),v=sx.value; sx.innerHTML='<option value=""></option>'+t("sx").map((s,i)=>`<option value="${SEXV[i]}">${s}</option>`).join(""); sx.value=v;
+  });
+  renumber();
+}
+function renumber(){
+  document.querySelectorAll(".guest").forEach((g,i)=>{
+    g.querySelector(".gtitle").textContent=i===0?t("main"):`${t("guest")} ${i+1}`;
+    g.querySelector(".rm").classList.toggle("hidden",i===0);
+    g.querySelector(".main-only").classList.toggle("hidden",i!==0);
+    g.querySelector(".minor-only").classList.toggle("hidden",i===0);
+  });
+}
+
+function compress(file){
+  return new Promise((res,rej)=>{
+    const img=new Image(),u=URL.createObjectURL(file);
+    img.onload=()=>{const m=1600,s=Math.min(1,m/Math.max(img.width,img.height));const c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL("image/jpeg",0.82));};
+    img.onerror=rej; img.src=u;
+  });
+}
+const fmtCpf=v=>v.replace(/\D/g,"").slice(0,11).replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})\.(\d{3})(\d)/,"$1.$2.$3").replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/,"$1.$2.$3-$4");
+
+function addGuest(){
+  const g=$("#gtpl").content.firstElementChild.cloneNode(true);
+  g.dataset.kind=L==="pt"?"cpf":"passport";
+  const segs=g.querySelectorAll(".seg button");
+  const setKind=k=>{g.dataset.kind=k;segs.forEach(b=>b.classList.toggle("on",b.dataset.k===k));g.querySelector(".pass").classList.toggle("hidden",k!=="passport");g.querySelector(".cpfbox").classList.toggle("hidden",k!=="cpf");};
+  segs.forEach(b=>b.onclick=()=>setKind(b.dataset.k));
+  setKind(g.dataset.kind);
+  const cam=g.querySelector(".cam"),fi=g.querySelector(".photo");
+  cam.onclick=()=>fi.click(); cam.onkeydown=e=>{if(e.key==="Enter")fi.click()};
+  fi.onchange=async()=>{const f=fi.files[0];if(!f)return;try{g._photo=await compress(f);const p=g.querySelector(".prev");p.src=g._photo;p.classList.remove("hidden");g.querySelector(".ic").classList.add("hidden");}catch(e){}};
+  const nat=g.querySelector(".nat"),res=g.querySelector(".res");
+  nat.onchange=()=>{if(!res.dataset.touched)res.value=nat.value};
+  res.onchange=()=>res.dataset.touched=1;
+  const cpf=g.querySelector(".cpf"),cdob=g.querySelector(".cdob");
+  cpf.oninput=()=>{cpf.value=fmtCpf(cpf.value);g._cpfOk=false;};
+  const check=async()=>{
+    const ok=g.querySelector(".cpfok"),er=g.querySelector(".cpferr");ok.classList.add("hidden");er.classList.add("hidden");g._cpfOk=false;
+    const c=cpf.value.replace(/\D/g,"");if(c.length!==11||!cdob.value)return;
+    try{const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({action:"lookup",cpf:c,dob:cdob.value})}).then(r=>r.json());
+      if(r.ok){g._cpfOk=true;ok.textContent=`✓ ${t("found")} ${r.name}`;ok.classList.remove("hidden");}
+      else{er.textContent=r.error==="bad_cpf"?t("cpfbad"):t("cpfnf");er.classList.remove("hidden");}
+    }catch(e){}
+  };
+  cpf.onblur=check; cdob.onchange=check;
+  g.querySelector(".rm").onclick=()=>{g.remove();renumber();};
+  $("#guests").appendChild(g);
+  applyLang();
+  return g;
+}
+
+function collect(){
+  const err=m=>{const e=$("#formErr");e.textContent=m;e.classList.remove("hidden");e.scrollIntoView({behavior:"smooth",block:"center"});return null;};
+  $("#formErr").classList.add("hidden");
+  const code=$("#code").value.trim().toUpperCase().replace(/\s/g,"");
+  if(!/^HM[A-Z0-9]{8}$/.test(code))return err(t("e_code"));
+  const cin=$("#cin").value,cout=$("#cout").value;
+  if(!cin||!cout||cout<=cin)return err(t("e_dates"));
+  const guests=[];
+  for(const [i,g] of [...document.querySelectorAll(".guest")].entries()){
+    const who=i===0?t("main"):`${t("guest")} ${i+1}`;
+    const v=s=>g.querySelector(s).value.trim();
+    let o;
+    if(g.dataset.kind==="cpf"){
+      const c=v(".cpf").replace(/\D/g,"");
+      if(c.length!==11||!v(".cdob"))return err(`${t("e_guest")} ${who}.`);
+      if(!g._cpfOk)return err(t("cpfnf"));
+      o={kind:"cpf",cpf:c,dob:v(".cdob")};
+    }else{
+      o={kind:"passport",passport:v(".pnum"),given:v(".given"),surname:v(".surname"),nationality:v(".nat"),dob:v(".pdob"),sex:v(".sex")||"NAOINFORMADO",residence:v(".res")||v(".nat"),photo:g._photo||null};
+      if(o.passport.length<5||!o.given||!o.surname||!o.nationality||!o.dob)return err(`${t("e_guest")} ${who}.`);
+    }
+    if(i===0){o.principal=true;o.email=v(".email");o.phone=v(".phone");}
+    else o.minor=g.querySelector(".minor").checked;
+    guests.push(o);
+  }
+  if(!$("#consent").checked)return err(t("e_consent"));
+  return {action:"submit",lang:L,stay:{property:$("#prop").value,code,checkin:cin,checkout:cout},motivo:$("#motivo").value,transporte:$("#transp").value,guests};
+}
+
+$("#send").onclick=async()=>{
+  const body=collect(); if(!body)return;
+  const b=$("#send"); b.disabled=true; b.textContent=t("sending");
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}).then(r=>r.json());
+    if(r.ok){$("#app").classList.add("hidden");$("#bar").classList.add("hidden");$("#done").classList.remove("hidden");scrollTo(0,0);}
+    else{const e=$("#formErr");e.textContent=r.error==="bad_code"?t("e_code"):r.error==="bad_dates"?t("e_dates"):t("e_server");e.classList.remove("hidden");}
+  }catch(e){const er=$("#formErr");er.textContent=t("e_server");er.classList.remove("hidden");}
+  b.disabled=false; b.textContent=t("send");
+};
+
+$("#lang").onchange=e=>{L=e.target.value;applyLang();};
+$("#addGuest").onclick=()=>{const g=addGuest();g.scrollIntoView({behavior:"smooth"});};
+const P={skydreams:1,vista:1,casamaria:1,casaquerida:1};
+if(P[qs.get("p")])$("#prop").value=qs.get("p");
+if(qs.get("c"))$("#code").value=qs.get("c").toUpperCase();
+if(qs.get("in"))$("#cin").value=qs.get("in");
+if(qs.get("out"))$("#cout").value=qs.get("out");
+$("#code").oninput=e=>e.target.value=e.target.value.toUpperCase();
+addGuest();
+</script>
+</body>
+</html>
