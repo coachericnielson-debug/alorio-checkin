@@ -308,7 +308,7 @@ if(qs.get("in"))$("#cin").value=qs.get("in");
 if(qs.get("out"))$("#cout").value=qs.get("out");
 $("#code").oninput=e=>{e.target.value=e.target.value.toUpperCase();if(e.target.value.length===10)findStay(e.target.value);};
 if(qs.get("c")){$("#code").value=qs.get("c").toUpperCase();findStay(qs.get("c")).finally(()=>{if(!STAY)$("#noStay").classList.remove("hidden");});}else{$("#noStay").classList.remove("hidden");}
-const NWANT=Math.min(50,parseInt(qs.get("n")||"1",10)||1);
+const NWANT=Math.max(1,parseInt(qs.get("n")||"1",10)||1);
 addGuest();
 for(let i=1;i<NWANT;i++)addGuest();
 scrollTo(0,0);
