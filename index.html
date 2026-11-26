@@ -189,10 +189,12 @@ function applyLang(){
   if(typeof STAY!=="undefined"&&STAY)showStay();
 }
 function renumber(){
+  const off=(typeof ALREADY!=="undefined")?ALREADY:0;
   document.querySelectorAll(".guest").forEach((g,i)=>{
-    g.querySelector(".gtitle").textContent=i===0?t("main"):`${t("guest")} ${i+1}`;
+    const first=(i===0&&!off);
+    g.querySelector(".gtitle").textContent=first?t("main"):`${t("guest")} ${i+1+off}`;
     g.querySelector(".rm").classList.toggle("hidden",i===0);
-    g.querySelector(".minor-only").classList.toggle("hidden",i===0);
+    g.querySelector(".minor-only").classList.toggle("hidden",first);
   });
 }
 
